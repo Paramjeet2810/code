@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const EthCrypto = require('eth-crypto');
 
 // The client that end-users will use to interact with our central payment processor
@@ -19,6 +20,12 @@ class Client {
     return EthCrypto.sign(this.wallet.privateKey, messageHash);
   }
 
+  // Creates a keccak256/SHA3 hash of some data
+  hash(data) {
+    return EthCrypto.hash.keccak256(data);
+  }
+
+
   // Verifies that a messageHash is signed by a certain address
   verify(signature, messageHash, address) {
     const signer = EthCrypto.recover(signature, messageHash);
@@ -33,10 +40,25 @@ class Client {
 
   // Generates new transactions
   generateTx(to, amount, type) {
-    // TODO:
+    // Done
     // create an unsigned transaction
     // create a signature of the transaction
     // return a Javascript object with the unsigned transaction and transaction signature
+    const unSignedTransaction = {
+      type,
+      amount,
+      from: this.wallet.address,
+      to,
+    };
+
+    const signature = this.sign(unSignedTransaction);
+
+    const transaction = {
+      contents: unSignedTransaction,
+      sig: signature,
+    };
+
+    return transaction;
   }
 }
 
